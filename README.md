@@ -6,10 +6,10 @@ Time Series Forecasting as Reasoning: A Slow-Thinking Approach with Reinforced L
 
 
 <div align="center">
-  <a href="https://huggingface.co/">
+  <a href="https://huggingface.co/ustc-zyt/Time-R1">
     🤗 <strong>Model (Time-R1)</strong>
   </a> |
-  <a href="https://huggingface.co/">
+  <a href="https://huggingface.co/datasets/ustc-zyt/time-r1-data">
     📊 <strong>Train and Eval Dataset</strong>
   </a> |
   <a href="https://arxiv.org/">
@@ -26,7 +26,7 @@ Time Series Forecasting as Reasoning: A Slow-Thinking Approach with Reinforced L
 ## 📖 Abstract
 **Time-R1 introduces the study of slow-thinking reasoning for time series forecasting. We propose a two-stage reinforcement fine-tuning framework combining supervised warmup and policy optimization with GRIP, a group-based sampling strategy for multi-step reasoning. Our model significantly improves forecasting accuracy across diverse datasets, demonstrating the effectiveness of training LLMs for structured temporal reasoning.**
 
-This repository contains the official code and fine-tuned [model checkpoints](https://huggingface.co/) for our [paper](https://arxiv.org/):
+This repository contains the official code for our [paper](https://arxiv.org/):
 > **Time Series Forecasting as Reasoning: A Slow-Thinking Approach with Reinforced LLMs** > Yucong Luo ,
 Yitong Zhou,
 Mingyue Cheng,
@@ -63,9 +63,9 @@ Experiments show that Time-R1 significantly improves forecasting accuracy and ge
 
 ## 📚 Released Resources
 
-* **[Training and Eval Dataset](https://huggingface.co/):** 
+* **[Training Dataset](https://huggingface.co/datasets/ustc-zyt/time-r1-data):** 
     * Preparing training and evaluating datasets.
-* **[Time-R1 Model Checkpoints](https://huggingface.co/):**
+* **[Time-R1 Model Checkpoints](https://huggingface.co/ustc-zyt/Time-R1):**
     * The final model after two-stage RFT.
 * **[Source Code](https://github.com/lqzxt/Time-R1):** 
   * For training Time-R1 and evaluating.
