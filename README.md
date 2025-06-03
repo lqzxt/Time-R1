@@ -115,7 +115,7 @@ bash scripts/time-r1.sh
 ## 📈 Evaluation
 ```bash
 cd Time-R1/eval
-python eval.py
+python main.py
 ```
 
 ## 🙏Acknowledgements
