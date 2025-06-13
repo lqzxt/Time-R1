@@ -27,12 +27,12 @@ Time Series Forecasting as Reasoning: A Slow-Thinking Approach with Reinforced L
 **Time-R1 introduces the study of slow-thinking reasoning for time series forecasting. We propose a two-stage reinforcement fine-tuning framework combining supervised warmup and policy optimization with GRIP, a group-based sampling strategy for multi-step reasoning. Our model significantly improves forecasting accuracy across diverse datasets, demonstrating the effectiveness of training LLMs for structured temporal reasoning.**
 
 This repository contains the official code for our [paper](https://arxiv.org/):
-> **Time Series Forecasting as Reasoning: A Slow-Thinking Approach with Reinforced LLMs** > Yucong Luo ,
+> **Time Series Forecasting as Reasoning: A Slow-Thinking Approach with Reinforced LLMs** > Yucong Luo,
 Yitong Zhou,
 Mingyue Cheng,
 Jiahao Wang,
-Jintao Zhang,
 Daoyu Wang,
+Jintao Zhang,
 Tingyue Pan  
 
 ## Updates/News:
