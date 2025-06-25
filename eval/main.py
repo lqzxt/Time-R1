@@ -6,7 +6,7 @@ import numpy as np
 from tqdm import tqdm
 
 from dataLoader import DataLoader
-from utils import get_result, call_R1
+from utils import get_result, call_R1, getQwenResult
 
 
 def handle_data(model_name, data_chunk, output_dir, run_num, pred_window, progress, lock):
@@ -19,7 +19,7 @@ def handle_data(model_name, data_chunk, output_dir, run_num, pred_window, progre
 
         for i in range(run_num):
             try:
-                qwen_output = call_R1(prompt)
+                qwen_output = getQwenResult(prompt)
                 qwen_res = get_result(qwen_output)
                 if len(qwen_res) == 0:
                     qwen_output += '\n```\n'
@@ -48,7 +48,7 @@ def handle_data(model_name, data_chunk, output_dir, run_num, pred_window, progre
                     progress.update(1)
 
 
-def main(model_name="deepseek-R1", desc="Base_RL_96_96_n16_oldRL_ETTh1", dataset_name="ETTh1", look_back=96, pred_window=96,
+def main(model_name="qwen-7b", desc="your_experiment_description", dataset_name="ETTh1", look_back=96, pred_window=96,
          run_num=1, noTime=False):
     dataLoader = DataLoader(dataset_name, look_back, pred_window, noTime)
     data = dataLoader.load_data()
