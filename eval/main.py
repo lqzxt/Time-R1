@@ -48,7 +48,7 @@ def handle_data(model_name, data_chunk, output_dir, run_num, pred_window, progre
                     progress.update(1)
 
 
-def main(model_name="qwen-7b", desc="your_experiment_description", dataset_name="ETTh1", look_back=96, pred_window=96,
+def main(model_name="qwen7b", desc="your_experiment_description", dataset_name="ETTh1", look_back=96, pred_window=96,
          run_num=1, noTime=False):
     dataLoader = DataLoader(dataset_name, look_back, pred_window, noTime)
     data = dataLoader.load_data()

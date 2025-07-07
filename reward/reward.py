@@ -50,48 +50,35 @@ def decompose(x):
 def mean_squared_error(y_true, y_pred):
     return np.mean((np.array(y_true) - np.array(y_pred)) ** 2)
 
-
-# 季节性和趋势的均方误差
 def mean_squared_error_season_trend(y_true, y_pred):
     season_true, trend_true = decompose(y_true)
     season_pred, trend_pred = decompose(y_pred)
     return np.mean((np.array(season_true) - np.array(season_pred)) ** 2), np.mean(
         (np.array(trend_true) - np.array(trend_pred)) ** 2),
 
-
-# 从string中提取答案
 def extract_answer(text):
     match = re.search(r'<answer>(.*?)</answer>', text, re.DOTALL)
     return match.group(1) if match else text
 
-
 def extract_qwen_results(text):
     text = extract_answer(text)
     res_list = []
-    # 尝试匹配代码块
     pattern = r"```*([\s\S]*?)```"
     match = re.search(pattern, text)
-    # 如果没有匹配到代码块，使用表格格式匹配
     text_list = re.findall(r"\|.*\|", text) if match is None else match.group(1).strip().split('\n')
     for index, item in enumerate(text_list):
-        # 跳过表头
         if index == 0:
             continue
         item = item.strip().rstrip('|').strip()
-        # 匹配数值
         num_match = re.search(r'(-?\d+\.\d+|-?\d+)$', item)
         if num_match:
             res_list.append(float(num_match.group(0)))
     return res_list
 
-
-# 从string gt 提取数据
 def extract_ground_truth_values(text):
     pattern = r'(-?\d+\.\d+)'
     return [float(value) for value in re.findall(pattern, text)]
 
-
-# 规范化答案文本
 def normalize_answer(text):
     def remove_articles(text):
         return re.sub(r"\b(a|an|the)\b", " ", text)
@@ -107,27 +94,20 @@ def normalize_answer(text):
 
     return white_space_fix(remove_articles(remove_punc(lower(text))))
 
-
-# 提取解决方案中的答案
 def extract_solution_answer(solution_str):
     match = re.search(r'<answer>(.*?)</answer>', solution_str, re.DOTALL)
     return match.group(1).strip() if match else None
 
-
-# 计算格式得分
 def compute_format_score(solution_str):
     if solution_str is None:
         return -1.0
     try:
-        # 检查是否包含 <think> 和 <answer> 标签
         think_answer_match = re.search(r'<think>(.*?)</think>\n<answer>(.*?)</answer>', solution_str, re.DOTALL)
         return 0.0 if think_answer_match else -1.0
     except Exception as e:
         print(f"[DEBUG] Error in compute_format_score: {e}")
         return -1.0
 
-
-# 计算答案正确性奖励
 def compute_answer_score(solution_str, ground_truth):
     ground_truth = extract_ground_truth_values(ground_truth)
     answer = extract_qwen_results(solution_str)
@@ -139,44 +119,37 @@ def compute_answer_score(solution_str, ground_truth):
     else:
         return 0
 
-
-# 根据长度给予适当奖励（目前上限96/96），未来考虑让LLM输出尽可能长的输出
 def compute_score_length(solution_str, ground_truth):
     ground_truth = extract_ground_truth_values(ground_truth)
     answer = extract_qwen_results(solution_str)
     if len(answer) >= len(ground_truth):
         return 0.1
     else:
-        # 一旦模型能够输出一定长度的时序数据，即使长度不足96
-        # 也根据长度进行适度奖励
-        # 防止一直给予负奖励训练失败
         return 0.1 * len(answer) / len(ground_truth)
-    
 
 def reworad_norm(x_list, y_list):
     x_array = np.array(x_list)
     y_array = np.array(y_list)
-    mu = np.nanmean(x_array)  # 使用忽略NaN的均值
-    denominator = np.nanmax(np.abs(x_array - mu))  # 忽略NaN的最大值
-    denominator = max(denominator, 1e-8)  # 添加保护值
+    mu = np.nanmean(x_array)
+    denominator = np.nanmax(np.abs(x_array - mu))
+    denominator = max(denominator, 1e-8)
     x_result = (x_array - mu) / denominator
     y_result = (y_array - mu) / denominator
     return x_result.tolist(), y_result.tolist()
 
-
-
-    
-def compute_score(data_source, solution_str, ground_truth, extra_info=None):
-    score = compute_format_score(solution_str)
-    score += compute_score_length(solution_str, ground_truth)
-    score += compute_answer_score(solution_str, ground_truth)
-    score += conmute_change_point(solution_str, ground_truth)
-    return score
-
-
+def compute_answer_score_season_trend(solution_str, ground_truth):
+    ground_truth = extract_ground_truth_values(ground_truth)
+    answer = extract_qwen_results(solution_str)
+    if len(answer) >= len(ground_truth):
+        norm_answer, norm_gt = reworad_norm(answer, ground_truth)
+        mse_season, mse_trend = mean_squared_error_season_trend(norm_gt, norm_answer[:len(ground_truth)])
+        score_season = (1 - 1 / (1 + np.exp(-2 * mse_season))) * 2
+        score_trend = (1 - 1 / (1 + np.exp(-2 * mse_trend))) * 2
+        return 0.05 * score_season + 0.15 * score_trend
+    else:
+        return 0
 
 def change_point(data):
-    #data=data.tolist()
     change_point_max=[]
     change_point_min=[]
     data_mirror_forward=[data[2],data[1]]
@@ -191,16 +164,12 @@ def change_point(data):
             change_point_min.append(i)
     return change_point_max,change_point_min
 
-
-
-
 def conmute_change_point(solution_str, ground_truth):
     ground_truth = extract_ground_truth_values(ground_truth)
     answer = extract_qwen_results(solution_str)
 
     ground_change_point_max,ground_change_point_min=change_point(ground_truth)
     answer_change_point_max,answer_change_point_min=change_point(answer)
-
 
     answer_max_shot=0
     answer_min_shot=0
@@ -217,3 +186,11 @@ def conmute_change_point(solution_str, ground_truth):
             answer_min_shot+=0
 
     return answer_max_shot/len(ground_change_point_max)*0.1+answer_min_shot/len(ground_change_point_min)*0.1
+
+def compute_score(data_source, solution_str, ground_truth, extra_info=None):
+    score = compute_format_score(solution_str)
+    score += compute_score_length(solution_str, ground_truth)
+    score += compute_answer_score(solution_str, ground_truth)
+    score += conmute_change_point(solution_str, ground_truth)
+    score += compute_answer_score_season_trend(solution_str, ground_truth)
+    return score
