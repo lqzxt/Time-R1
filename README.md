@@ -13,7 +13,7 @@ This repository contains the official code for the paper:
 ## 🌟 Overview
 
 <div align="center">
-<img src="figures/1_framework.png" width="40%"/>
+<img src="figures/1_framework.png" width="90%"/>
 <p><em>Overview of the Time-R1.</em></p>
 </div>
 
@@ -22,7 +22,7 @@ Large Language Models (LLMs) demonstrate impressive capabilities but often lack 
 2. **(Stage 2: RL for Exploring Effective Reasoning Patterns)** Advanced forecasting via RL, with rewards based on ground truth alignment, multi-horizon accuracy, and domain principles. **GRIP** (Group-based Relative Importance for Policy Optimization) enhances reasoning paths through non-uniform sampling and adaptive weighting.
 
 <div align="center">
-<img src="figures/2_grip.png" width="40%"/>
+<img src="figures/2_grip.png" width="90%"/>
 <p><em>GRIP Optimization Framework.</em></p>
 </div>
 
